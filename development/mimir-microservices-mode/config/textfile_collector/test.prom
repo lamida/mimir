@@ -1,5 +1,6 @@
 machine_role{role="postfix"} 1
 machine_role{role="apache"} 3
 machine_role{role="app"} 6
-temperature{room="bedroom"} 27
+temperature{room="bedroom"} 28
 temperature{room="kitchen"} 19
+custom_build_info{build="1.0.0",version="1.0.0", code="blue-whale"} 1

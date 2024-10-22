@@ -58,6 +58,7 @@ std.manifestYamlDoc({
     (if $._config.cache_backend == 'redis' then self.redis else self.memcached + self.memcached_exporter) +
     (if $._config.enable_load_generator then self.load_generator else {}) +
     (if $._config.enable_query_tee then self.query_tee else {}) +
+    self.node_exporter +
     {},
 
   distributor:: {
@@ -110,7 +111,7 @@ std.manifestYamlDoc({
         httpPort: 8005,
         extraArguments:
           // Use of scheduler is activated by `-querier.scheduler-address` option and setting -querier.frontend-address option to nothing.
-          if $._config.use_query_scheduler then '-querier.scheduler-address=query-scheduler:9011 -querier.frontend-address=' else '',
+          if $._config.use_query_scheduler then '-querier.scheduler-address=query-scheduler:9011 -querier.frontend-address= -querier.query-engine=mimir' else '-querier.query-engine=mimir',
       }),
 
       'query-frontend': mimirService({
@@ -383,7 +384,7 @@ std.manifestYamlDoc({
         './config/dashboards-mimir.yaml:/etc/grafana/provisioning/dashboards/mimir.yaml',
         '../../operations/mimir-mixin-compiled/dashboards:/var/lib/grafana/dashboards/Mimir',
       ],
-      ports: ['3000:3000'],
+      ports: ['3009:3000'],
     },
   },
 
@@ -446,6 +447,19 @@ std.manifestYamlDoc({
       ports: ['9999:80'],
     },
   },
+
+  node_exporter:: {
+    'node-exporter': {
+      image: 'quay.io/prometheus/node-exporter:latest',
+      command: ['--collector.textfile.directory', '/textfile_collector'],
+      volumes: ['./config/textfile_collector:/textfile_collector'],
+      ports: ['9100:9100'],
+      restart: 'always',
+      deploy: {
+        mode: 'global',
+      },
+    },
+  }
 
   // "true" option for std.manifestYamlDoc indents arrays in objects.
 }, true)
