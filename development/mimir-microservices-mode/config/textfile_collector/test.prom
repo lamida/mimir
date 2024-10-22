@@ -1,0 +1,5 @@
+machine_role{role="postfix"} 1
+machine_role{role="apache"} 3
+machine_role{role="app"} 6
+temperature{room="bedroom"} 27
+temperature{room="kitchen"} 19

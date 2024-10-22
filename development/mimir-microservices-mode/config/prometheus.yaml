@@ -39,6 +39,11 @@ scrape_configs:
         replacement: '${1}'
     scrape_classic_histograms: true
 
+  - job_name: 'node-exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['node-exporter:9100']
+
 remote_write:
   - url: http://distributor-1:8000/api/v1/push
     send_native_histograms: true
